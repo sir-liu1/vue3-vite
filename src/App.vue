@@ -8,10 +8,9 @@ import HelloWorld from './components/HelloWorld.vue'
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
     <div class="wrapper">
       <HelloWorld msg="王婷 - 妈了个巴子 You did it!" />
+      <h1> 王婷 - 妈了个巴子 You did it!</h1>
 
-      <nav>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+      
     </div>
   </header>
 

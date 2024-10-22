@@ -1,44 +1,97 @@
-<script setup>
-defineProps({
-  msg: {
-    type: String,
-    required: true
-  }
-})
-</script>
-
 <template>
-  <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
-    </h3>
+  <div class="about">
+    <button @click="checkIn">打卡</button>
+    <button @click="calculate">计算</button>
+    <p v-html="str"></p>
   </div>
 </template>
+<script setup>
+import { ref} from 'vue'
+const data = ref(0);
 
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
+function checkIn() {
+  const currentTime = new Date().getTime();
+  console.log(currentTime);
+  const time = getNowFormatDate();
+  const timeArr = localStorage.getItem(getNowFormatDate());
+  if(timeArr){
+     const newTime = JSON.parse(timeArr);
+     newTime.push(currentTime);
+     localStorage.setItem(time,JSON.stringify(newTime));
+  }else{
+    const newTime = [currentTime];
+    localStorage.setItem(time,JSON.stringify(newTime));
+  }
+}
+let str = ref("");
+
+function calculate() {
+  str.value = ""
+  console.log('-------');
+  
+  debugger;
+  for (var i=0;i<localStorage.length;i++) {
+      const key = localStorage.key(i);
+      const timeArr =  JSON.parse(localStorage.getItem(key));
+      const start  = timeArr.shift();
+      const end = timeArr.pop();
+      let time = Math.abs( Number(end) - Number(start))  -(1000 * 60 * 60 *1.5);
+      if(isTimeStampAfter6PM(end)){
+        time  -=(1000 * 60 * 60 *0.5);
+      }
+      // if(isTimeInRange(time)){
+      //  time-= (minutesPast530(timestamp)/60)*(1000 * 60 * 60)
+      // }
+       // 将毫秒转换为小时
+      let differenceInHours = (time / (1000 * 60 * 60)).toFixed(1);
+
+  
+      str.value+=("日期："+key+"  时间:" +differenceInHours+'<br>');
+    }
 }
 
-h3 {
-  font-size: 1.2rem;
+
+function minutesPast530(timestamp) {
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  if (hours === 17 && minutes >= 30 && hours < 18) {
+    return minutes - 30;
+  } else {
+    return -1;
+  }
 }
 
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
 
+
+function isTimeInRange(timestamp) {
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return hours === 17 && minutes >= 30 && hours < 18;
+}
+function isTimeStampAfter6PM(timestamp) {
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  return hours >= 18;
+}
+function getNowFormatDate() {
+  let date = new Date(),
+    year = date.getFullYear(), //获取完整的年份(4位)
+    month = date.getMonth() + 1, //获取当前月份(0-11,0代表1月)
+    strDate = date.getDate() // 获取当前日(1-31)
+  if (month < 10) month = `0${month}` // 如果月份是个位数，在前面补0
+  if (strDate < 10) strDate = `0${strDate}` // 如果日是个位数，在前面补0
+ 
+  return `${year}-${month}-${strDate}`
+}
+</script>
+<style>
 @media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
+  .about {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
   }
 }
 </style>
