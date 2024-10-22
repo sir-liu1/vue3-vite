@@ -36,7 +36,7 @@ function calculate() {
       const start  = timeArr.shift();
       const end = timeArr.pop();
       let time = Math.abs( Number(end) - Number(start))  -(1000 * 60 * 60 *1.5);
-      if(isTimeStampAfter6PM(time)){
+      if(isTimeStampAfter6PM(end)){
         time  -=(1000 * 60 * 60 *0.5);
       }
       // if(isTimeInRange(time)){
