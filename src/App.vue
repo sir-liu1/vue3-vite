@@ -4,8 +4,10 @@
     <el-button type="success" @click="calculate">计算</el-button>
     <div>
       <el-table :data="arr" style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180"></el-table-column>
-    <el-table-column prop="time" label="Time (hours)" width="180"></el-table-column>
+    <el-table-column prop="date" label="Date" ></el-table-column>
+    <el-table-column prop="start" label="start" ></el-table-column>
+    <el-table-column prop="end" label="end" ></el-table-column>
+    <el-table-column prop="time" label="Time (hours)" ></el-table-column>
   </el-table>
     </div>
   </div>
@@ -16,7 +18,7 @@ import { ref, onMounted } from 'vue'
 
 onMounted(() => {
 
-  console.log(isTimeInRange(1729676700000));
+  console.log(calculate());
 
 
 })
@@ -66,11 +68,12 @@ function calculate() {
     str.value += ("日期：" + key + "  时间:" + differenceInHours + '<br>');
     arr.value.push({
       date: key,
-      time: differenceInHours
+      time: differenceInHours,
+      start: convertTimestampToTime(start),
+      end: convertTimestampToTime(end)
     })
   }
 }
-let data11 = [1729641600000, 1729675800000, 1729684800000]
 
 function minutesPast530(timestamp) {
   const date = new Date(timestamp);
@@ -81,6 +84,16 @@ function minutesPast530(timestamp) {
   } else {
     return -1;
   }
+}
+function convertTimestampToTime(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 
