@@ -41,6 +41,7 @@ function checkIn() {
     message: '打卡成功',
     type: 'success',
   })
+  calculate();
 }
 let str = ref("");
 const arr = ref([]);
