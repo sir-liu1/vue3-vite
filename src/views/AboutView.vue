@@ -13,7 +13,7 @@ console.log('-----------------');
 
 onMounted(() => {
 
-  console.log(isTimeInRange(1729675260000));
+  console.log(calculate(1729675260000));
   
 
 })

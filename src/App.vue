@@ -1,10 +1,10 @@
 <template>
   <div class="about">
     <el-button type="primary" @click="checkIn">打卡</el-button>
-    <el-button type="success" @click="calculate">计算</el-button>
+    <el-button type="success" @click="calculateLast">计算</el-button>
     <div>
       <el-table :data="arr" style="width: 100%">
-    <el-table-column prop="date" label="Date" ></el-table-column>
+    <el-table-column width="100px" prop="date" label="Date" ></el-table-column>
     <el-table-column prop="start" label="start" ></el-table-column>
     <el-table-column prop="end" label="end" ></el-table-column>
     <el-table-column prop="time" label="Time (hours)" ></el-table-column>
@@ -50,12 +50,22 @@ function calculate() {
   arr.value = [];
   console.log('-------');
 
-  debugger;
+  ;
   for (var i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     const timeArr = JSON.parse(localStorage.getItem(key));
     const start = timeArr.shift();
     let end = timeArr.pop();
+
+    if(!end){
+      arr.value.push({
+      date: key,
+      time: 0,
+      start: convertTimestampToTime(start),
+      end: "00:00"
+    })
+      continue;
+    }
     if (isTimeInRange(end)) {
       end = new Date(`${key} 17:30`).getTime();
     }
@@ -73,8 +83,83 @@ function calculate() {
       start: convertTimestampToTime(start),
       end: convertTimestampToTime(end)
     })
+    arr.value = sortArrayByDate(arr.value);
+    console.log(arr.value);
+    
   }
 }
+function sortArrayByDate(array) {
+  const result = array.sort((a, b) => {
+    ;
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return -dateA + dateB;
+  });
+  console.log(result);
+  return result;
+  
+}
+
+function isWeekday(dateString) {
+  const date = new Date(dateString);
+  const arr = [0,6]
+  const dayIndex = date.getDay();
+  return !arr.includes(dayIndex);
+}
+
+function isWednesday(dateString) {
+  const date = new Date(dateString);
+  return date.getDay() === 4;
+}
+
+function calculateLast() {
+  const time111 = getNowFormatDate();
+  const result = [time111];
+  const currentDate = new Date();
+  for (let i = 1; i <= 7; i++) {
+    const previousDate = new Date(currentDate);
+    previousDate.setDate(currentDate.getDate() - i);
+    const year = previousDate.getFullYear();
+    const month = String(previousDate.getMonth() + 1).padStart(2, '0');
+    const day = String(previousDate.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    if(isWednesday(dateString)){
+      result.push(`${year}-${month}-${day}`);
+      break;
+    }
+    result.push(`${year}-${month}-${day}`);
+  }
+  console.log(result);
+
+  let time = 0;
+  let count = 0;
+  for (let index = 0; index < result.length; index++) {
+    const date = result[index];
+    arr.value.forEach(row=>{
+      if(date === row.date){
+        debugger;
+      if(isWeekday(row.date)){
+        console.log(date+"工作了"+row.time);
+        time+=Number(row.time);
+        count++;
+      }
+      }
+     
+    })
+  }
+
+  const message1 = `工作了${count}天，总工时为${time};平均为${(time/count).toFixed(2)}`;
+  ElMessage({
+    message: message1,
+    type: 'success',
+  })
+}
+
+
+
+
+
+
 
 function minutesPast530(timestamp) {
   const date = new Date(timestamp);
@@ -100,7 +185,7 @@ function convertTimestampToTime(timestamp) {
 
 
 function isTimeInRange(timestamp) {
-  debugger
+  
   const date = new Date(timestamp);
   const hours = date.getHours();
   const minutes = date.getMinutes();
