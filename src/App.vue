@@ -109,7 +109,7 @@ function isWeekday(dateString) {
 
 function isWednesday(dateString) {
   const date = new Date(dateString);
-  return date.getDay() === 4;
+  return date.getDay() === 3;
 }
 
 function calculateLast() {
@@ -149,10 +149,7 @@ function calculateLast() {
   }
 
   const message1 = `工作了${count}天，总工时为${time};平均为${(time/count).toFixed(2)}`;
-  ElMessage({
-    message: message1,
-    type: 'success',
-  })
+  alert(message1);
 }
 
 
